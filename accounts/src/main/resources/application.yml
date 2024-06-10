@@ -1,0 +1,44 @@
+server:
+  port: 8080
+spring:
+  #Con le seguenti 2 property indico che il microservizio deve interrogare il config server, cercare il file accounts_prod.yml
+  application:
+    name: "accounts" #Serve per andare a beccare i file all''interno del config server che iniziano per accounts
+  profiles:
+    active: "prod"
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: ''
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  #Il prefisso configserver è obbligatorio e non si riferisce al nome del modulo "configserver"
+  #La keyword optional indica che l'avvio del microservizio può proseguire anche se il configserver non risponde
+  config:
+    import: "configserver:http://localhost:8071/"
+
+  #Link al message broker rabbitMq: Usare questi parametri se non vuoi usare le proprietà di default
+  #In questo caso lo sono ma sono state comunque inserite
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
+
+#Includo la possibilità, per questo modulo, di usare l'api refresh dell'actuator per recepire le modifiche ai parametri di configurazione
+management:
+  endpoints:
+    web:
+      exposure:
+        include: busrefresh  #Così espongo sia il refresh standard, che il busrefresh avanzato (entrambi di actuator)
+
+

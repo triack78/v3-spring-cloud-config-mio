@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: "configserver"
+  profiles:
+    #active: native #Voglio attivare il profilo native di spring cloud config server
+    active: git
+  cloud:
+    config:
+      server:
+        #native:
+          # Ricerco nel classpath
+          #search-locations: "classpath:/config"
+          #Ricerco in un'area del filesystem
+          #search-locations: "file:///C://Users//Ulixe//Desktop//FORMAZIONE_ULIXE//2024//Corso_Microservizi//config"
+        git:
+          uri: "https://github.com/triack78/microservices_course.git"
+          default-label: main
+          timeout: 5 #Dopo 5 secondi viene lanciata un'eccezione
+          clone-on-start: true #Parte il clone su disco alla partenza del configserver
+          force-pull: true #Viene fatto l'override di tutte le propriet� modificate in locale
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
+
+#Con questo indico al configserver che pu� usare lo springserver config bnus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  #Feature dell'actuator: espongo degli endpoint per vedere se l'istanza è attiva (liveness) e pronta a ricevere trafficp (readiness)
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+
+encrypt:
+  key: "45D81EC1EF61DF9AD8D3E5BB397F9" #Config Server espone nativamente i metodi encrpyt e decrypt che si basano su questa property.
+server:
+  port: 8071
